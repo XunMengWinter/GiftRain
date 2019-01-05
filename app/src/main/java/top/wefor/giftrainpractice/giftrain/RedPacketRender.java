@@ -119,10 +119,10 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
     private Random mRandom = new Random();
     private Paint mPaint;
     private Paint mTextPaint;
-    private static final int INVISIBLE_Y = 5000;
-    private static final int SLEEP_TIME = 10; //多少毫秒一帧 TODO 待添加双重校准
-    private static final int GIF_PER_TIME = 76 / SLEEP_TIME;
-    private static int BLOCK_SPEED = 20;
+    private static final int INVISIBLE_Y = 5000; //不可见的y坐标（用于防误判，可以拉回）。
+    private static final int SLEEP_TIME = 10; //多少毫秒一帧（请根据设备性能权衡） TODO 待添加双重校准
+    private static final float BOOM_PER_TIME = 80 / SLEEP_TIME; //爆炸物多少帧刷新一次（UI给的动画是80ms一帧，所以需要拿 80/每帧时长）。
+    private static int BLOCK_SPEED = 20; //红包每一帧的移动距离（在xxhdpi基准下采用 耗时/1.3f）
     private RedPacket mLastDrawRedPacket; //最后绘制的红包--礼物的那个。
     private BoxPrizeBean mBoxPrizeBean; //红包信息
     private boolean mRaining;
@@ -208,7 +208,7 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
         }
 
         while (!mDone) {
-            long startNano = System.nanoTime();
+            final long startNano = System.nanoTime();
             Canvas canvas = null;
             try {
                 canvas = surface.lockCanvas(null);
@@ -240,8 +240,8 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
 //                    Log.i("xyz", dirY + " y " + dirMills);
                 }
                 lastNano = nano;
-//                int giftPerTime = (int) (GIF_PER_TIME * 1.5f);//礼物的慢一倍。
-                int giftPerTime = GIF_PER_TIME;
+//                int giftPerTime = (int) (BOOM_PER_TIME * 1.5f);//礼物的慢一倍。
+                final float giftPerTime = BOOM_PER_TIME;
                 for (RedPacket redPacket : mRedPackets) {
                     int y = redPacket.nextY(dirY);
                     int x = redPacket.nextX(0);
@@ -252,11 +252,12 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
 
                     if (y > visibleY && y < mHeight) {
                         //爆炸!
-                        int typeIndex = redPacket.addTypeIndex(1) - 1;
+                        final int typeIndex = redPacket.addTypeIndex(1) - 1;
                         switch (redPacket.getType()) {
                             case RedPacket.TYPE_BOOM:
-                                if (typeIndex / GIF_PER_TIME < RedPacketRes.BOOM_LIST.length) {
-                                    redPacket.setImageRes(RedPacketRes.BOOM_LIST[typeIndex / GIF_PER_TIME]);
+                                final int boomIndex = (int) (typeIndex / BOOM_PER_TIME);
+                                if (boomIndex < RedPacketRes.BOOM_LIST.length) {
+                                    redPacket.setImageRes(RedPacketRes.BOOM_LIST[boomIndex]);
                                     if (typeIndex == 0) {
                                         //校准位置
                                         x = redPacket.nextX(-boomDx);
@@ -268,7 +269,7 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
                                 break;
                             case RedPacket.TYPE_GIFT:
                                 y = redPacket.nextY(-dirY);//位置复原
-                                int frame = typeIndex / giftPerTime;
+                                int frame = (int) (typeIndex / giftPerTime);
                                 if (frame < RedPacketRes.GIFT_LIST.length) {
                                     redPacket.setImageRes(RedPacketRes.GIFT_LIST[frame]);
                                     if (typeIndex == 0) {
@@ -276,7 +277,7 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
                                         x = redPacket.nextX(giftDx);
                                         y = redPacket.nextY(giftDy);
                                     } else {
-                                        int allTimes = (RedPacketRes.GIFT_LIST.length - 2) * giftPerTime;
+                                        int allTimes = (int) ((RedPacketRes.GIFT_LIST.length - 2) * giftPerTime);
                                         float percent = Math.min(1f, typeIndex * 1f / allTimes);
                                         int dx = (int) ((giftX - x) * percent);
                                         int dy = (int) ((giftY - y) * percent);
@@ -321,8 +322,8 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
                     int y = mLastDrawRedPacket.nextY(0);
                     canvas.drawBitmap(getBitmapFromRes(mLastDrawRedPacket.getImageRes()),
                             x, y, mPaint);
-                    //绘制文字
-                    if (RedPacketRes.isGiftDone(mLastDrawRedPacket.getImageRes()) && mBoxPrizeBean != null) {
+                    /*绘制文字*/
+                    if (RedPacketRes.isGiftFullOpen(mLastDrawRedPacket.getImageRes()) && mBoxPrizeBean != null) {
                         int textCenterX = x + giftWidth / 2;
                         int textCenterY = y + giftHeight / 4;
                         String upText = "获得";
@@ -396,8 +397,14 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
     }
 
 
-    /* 红包雨点击事件，返回点击的item */
-    public int click(int x, int y) {
+    /**
+     * 红包雨点击事件，返回点击的item.
+     *
+     * @param x 点击的x坐标
+     * @param y 点击的y坐标
+     * @return 返回点中的红包position。（若未点中则返回-1）
+     */
+    public int getClickPosition(int x, int y) {
         if (!mDone && mStandardBitmap != null && mRedPackets.size() > 0) {
             for (RedPacket redPacket : mRedPackets) {
                 if (redPacket.isClickable()

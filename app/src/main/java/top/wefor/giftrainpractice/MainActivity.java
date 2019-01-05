@@ -1,6 +1,5 @@
 package top.wefor.giftrainpractice;
 
-import android.graphics.Point;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -35,9 +34,7 @@ public class MainActivity extends AppCompatActivity {
                 boxInfo.setVoucher("ice " + i);
                 boxInfos.add(boxInfo);
             }
-            Point point = new Point();
-            getWindow().getWindowManager().getDefaultDisplay().getSize(point);
-            mRedPacketViewHelper.launchGiftRainRocket(0, boxInfos, point.x, point.x, new RedPacketViewHelper.GiftRainListener() {
+            mRedPacketViewHelper.launchGiftRainRocket(0, boxInfos, new RedPacketViewHelper.GiftRainListener() {
                 @Override
                 public void startLaunch() {
 

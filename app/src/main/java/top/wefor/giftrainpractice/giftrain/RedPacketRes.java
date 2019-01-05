@@ -89,7 +89,10 @@ public class RedPacketRes {
         return imageRes == BOOM_LIST[BOOM_LIST.length - 1];
     }
 
-    public static boolean isGiftDone(int imageRes) {
+    /**
+     * 礼物是否已完全展现
+     */
+    public static boolean isGiftFullOpen(int imageRes) {
         for (int i = GIFT_LIST.length / 2; i < GIFT_LIST.length; i++) {
             if (GIFT_LIST[i] == imageRes) {
                 return true;

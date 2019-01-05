@@ -51,9 +51,16 @@ public class RedPacketViewHelper {
         mActivity = activity;
     }
 
-    /*发射红包雨火箭*/
+
+    /**
+     * 发射红包雨。
+     *
+     * @param boxId            这次发射的id
+     * @param boxInfoList      红包雨列表
+     * @param giftRainListener 红包雨监听器
+     * @return 是否成功发射（只管有没有成功发射，不管最终是否顺利执行）。
+     */
     public boolean launchGiftRainRocket(int boxId, List<BoxInfo> boxInfoList,
-                                        int rocketWidth, int rocketHeight,
                                         GiftRainListener giftRainListener) {
         if (mIsGiftRaining || boxInfoList.isEmpty()) {
             return false;
@@ -62,10 +69,17 @@ public class RedPacketViewHelper {
         mBoxId = boxId;
         mGiftRainListener = giftRainListener;
         mGiftRainListener.startLaunch();
+
+        //...在此可以做一些动画，比如火箭发射...
+
+
         giftRain(boxInfoList);
         return true;
     }
 
+    /**
+     * 获取礼物
+     */
     private void openGift(int pos, BoxPrizeBean boxPrizeBean) {
         if (mGiftRainView == null || mRedPacketRender == null) {
             return;
@@ -73,24 +87,13 @@ public class RedPacketViewHelper {
         if (mActivity == null || mActivity.isFinishing()) {
             return;
         }
-
 //        mGiftRainView.setOnTouchListener(null);//出礼物后不处理点击。
+        //通知渲染器绘制礼物
         mRedPacketRender.openGift(pos, boxPrizeBean);
         mGiftRainListener.openGift(boxPrizeBean);
     }
 
     private void openBoom(int pos) {
-//        if (IS_DEBUG) {
-//            if (new Random().nextInt(10) > 6) {
-//                ///红包测试代码 TODO删除测试代码
-//                BoxPrizeBean response = new BoxPrizeBean();
-//                response.prizeName = "星星";
-//                response.amount = 77;
-//                openGift(pos, response);
-//                return;
-//            }
-//        }
-
         if (mRedPacketRender == null) {
             return;
         }
@@ -101,12 +104,13 @@ public class RedPacketViewHelper {
      * 红包雨
      */
     private void giftRain(@NonNull List<BoxInfo> boxInfoList) {
-        Log.i("xyz","gift rain create textureView");
+        Log.i("xyz", "gift rain create textureView");
         mGiftRainView = new TextureView(mActivity);
         mGiftRainView.setOnTouchListener((v, event) -> {
             if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                int pos = mRedPacketRender.click((int) event.getRawX(), (int) event.getRawY());
+                int pos = mRedPacketRender.getClickPosition((int) event.getRawX(), (int) event.getRawY());
                 if (pos >= 0) {
+                    /*获取到点击的红包position，根据此来判断是点到礼物还是boom*/
                     Random random = new Random();
                     if (random.nextInt(10) > 7) {
                         BoxInfo boxInfo = boxInfoList.get(pos);
@@ -123,7 +127,7 @@ public class RedPacketViewHelper {
             }
             return true;
         });
-        mGiftRainView.setOpaque(false);
+        mGiftRainView.setOpaque(false); //设置textureview透明，这样底下还可以显示其他组件。
         final ViewGroup viewGroup = (ViewGroup) mActivity.getWindow().getDecorView();
         viewGroup.addView(mGiftRainView);
 
@@ -136,6 +140,7 @@ public class RedPacketViewHelper {
                 }
                 mActivity.runOnUiThread(() -> {
                     mGiftRainView.setVisibility(View.VISIBLE);
+                    mGiftRainListener.startRain();
                 });
             }
 
@@ -155,7 +160,7 @@ public class RedPacketViewHelper {
                         mRedPacketRender = null;
                         //在所有红包雨的引用断开后，才置为false。
                         mIsGiftRaining = false;
-                        Log.i("xyz","gift rain remove textureView");
+                        Log.i("xyz", "gift rain remove textureView");
                     }
                 });
             }

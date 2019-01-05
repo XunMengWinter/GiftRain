@@ -7,17 +7,23 @@
     tools:context=".MainActivity">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Hello World!"
-        />
-
-    <Button
-        android:onClick="rain"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_margin="32dp"
-        android:text="Rain"/>
+        android:layout_margin="16dp"
+        android:autoLink="web"
+        android:gravity="center"
+        android:lineSpacingExtra="4dp"
+        android:text="https://github.com/XunMengWinter/GiftRain\n⚖️Apache-2.0"
+        android:textColorLink="@color/colorPrimary"
+        android:textSize="12sp"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|center"
+        android:layout_marginBottom="64dp"
+        android:onClick="rain"
+        android:text="Gift Rain"/>
 
 </FrameLayout>
