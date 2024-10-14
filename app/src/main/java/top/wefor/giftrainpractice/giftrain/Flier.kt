@@ -1,28 +1,27 @@
-package top.wefor.giftrainpractice.giftrain;
+package top.wefor.giftrainpractice.giftrain
 
 /**
  * 飞行物(设计待完善，需要考虑到某些飞行物可以转换（比如红包boom会变成爆炸物，也可能变成礼包）。
- * <p>
+ *
+ *
  * Created on 2018/2/1.
  *
  * @author ice
  */
+@Deprecated("")
+interface Flier {
+    fun nextX(dx: Int): Int
 
-@Deprecated
-public interface Flier {
-
-    int nextX(int dx);
-
-    int nextY(int dy);
+    fun nextY(dy: Int): Int
 
     /*判断某个点是否在区域内*/
-    boolean isInArea(int x, int y);
+    fun isInArea(x: Int, y: Int): Boolean
 
-    int getImageRes();
+    val imageRes: Int
 
-    boolean isClickable();
+    val isClickable: Boolean
 
-    int getType();
+    val type: Int
 
-    int addTypeIndex(int addIndex);
+    fun addTypeIndex(addIndex: Int): Int
 }

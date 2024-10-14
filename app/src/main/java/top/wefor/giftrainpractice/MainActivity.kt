@@ -1,66 +1,53 @@
-package top.wefor.giftrainpractice;
+package top.wefor.giftrainpractice
 
-import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.view.View;
+import android.os.Bundle
+import android.view.View
+import androidx.appcompat.app.AppCompatActivity
+import top.wefor.giftrainpractice.giftrain.RedPacketViewHelper
+import top.wefor.giftrainpractice.giftrain.RedPacketViewHelper.GiftRainListener
+import top.wefor.giftrainpractice.model.BoxInfo
+import top.wefor.giftrainpractice.model.BoxPrizeBean
 
-import java.util.ArrayList;
-import java.util.List;
+class MainActivity : AppCompatActivity() {
+    var mRedPacketViewHelper: RedPacketViewHelper? = null
 
-import top.wefor.giftrainpractice.giftrain.RedPacketViewHelper;
-import top.wefor.giftrainpractice.model.BoxInfo;
-import top.wefor.giftrainpractice.model.BoxPrizeBean;
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
 
-public class MainActivity extends AppCompatActivity {
-
-    RedPacketViewHelper mRedPacketViewHelper;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        mRedPacketViewHelper = new RedPacketViewHelper(this);
+        mRedPacketViewHelper = RedPacketViewHelper(this)
     }
 
-    public void rain(View view) {
-        view.setEnabled(false);
-        mRedPacketViewHelper.endGiftRain();
-        getWindow().getDecorView().postDelayed(() -> {
-            List<BoxInfo> boxInfos = new ArrayList<>();
-            for (int i = 0; i < 32; i++) {
-                BoxInfo boxInfo = new BoxInfo();
-                boxInfo.setAwardId(i);
-                boxInfo.setVoucher("ice " + i);
-                boxInfos.add(boxInfo);
+    fun rain(view: View) {
+        view.isEnabled = false
+        mRedPacketViewHelper!!.endGiftRain()
+        window.decorView.postDelayed({
+            val boxInfos: MutableList<BoxInfo> = ArrayList()
+            for (i in 0..31) {
+                val boxInfo = BoxInfo()
+                boxInfo.setAwardId(i)
+                boxInfo.setVoucher("ice $i")
+                boxInfos.add(boxInfo)
             }
-            mRedPacketViewHelper.launchGiftRainRocket(0, boxInfos, new RedPacketViewHelper.GiftRainListener() {
-                @Override
-                public void startLaunch() {
-
+            mRedPacketViewHelper!!.launchGiftRainRocket(0, boxInfos, object : GiftRainListener {
+                override fun startLaunch() {
                 }
 
-                @Override
-                public void startRain() {
-
+                override fun startRain() {
                 }
 
-                @Override
-                public void openGift(BoxPrizeBean boxPrizeBean) {
-
+                override fun openGift(boxPrizeBean: BoxPrizeBean) {
                 }
 
-                @Override
-                public void endRain() {
-                    view.setEnabled(true);
+                override fun endRain() {
+                    view.isEnabled = true
                 }
-            });
-        }, 500);
+            })
+        }, 500)
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        mRedPacketViewHelper.endGiftRain();
+    override fun onDestroy() {
+        super.onDestroy()
+        mRedPacketViewHelper!!.endGiftRain()
     }
 }

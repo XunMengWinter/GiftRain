@@ -1,7 +1,7 @@
 package top.wefor.giftrainpractice.giftrain;
 
 import android.app.Activity;
-import android.support.annotation.NonNull;
+import androidx.annotation.NonNull;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.TextureView;
@@ -115,8 +115,8 @@ public class RedPacketViewHelper {
                     if (random.nextInt(10) > 7) {
                         BoxInfo boxInfo = boxInfoList.get(pos);
                         BoxPrizeBean boxPrizeBean = new BoxPrizeBean();
-                        boxPrizeBean.amount = 5;
-                        boxPrizeBean.prizeName = "喵🐱";
+                        boxPrizeBean.setAmount(5);
+                        boxPrizeBean.setPrizeName("喵🐱");
                         openGift(pos, boxPrizeBean);
                     } else {
                         openBoom(pos);

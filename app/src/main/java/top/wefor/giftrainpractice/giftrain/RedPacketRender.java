@@ -327,11 +327,11 @@ public class RedPacketRender extends Thread implements TextureView.SurfaceTextur
                         int textCenterX = x + giftWidth / 2;
                         int textCenterY = y + giftHeight / 4;
                         String upText = "获得";
-                        String belowLeftText = mBoxPrizeBean.prizeName;
+                        String belowLeftText = mBoxPrizeBean.getPrizeName();
                         if (belowLeftText == null) {
                             belowLeftText = "";
                         }
-                        String belowRightText = " ×" + mBoxPrizeBean.amount;
+                        String belowRightText = " ×" + mBoxPrizeBean.getAmount();
 
                         mTextPaint.setColor(0xFFee91aa);
                         mTextPaint.setTextSize(density * 22);

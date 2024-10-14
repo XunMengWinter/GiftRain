@@ -1,4 +1,4 @@
-package top.wefor.giftrainpractice.model;
+package top.wefor.giftrainpractice.model
 
 /**
  * Created on 2018/1/26.
@@ -6,8 +6,7 @@ package top.wefor.giftrainpractice.model;
  *
  * @author ice
  */
-
-public class BoxPrizeBean {
-    public String prizeName;
-    public int amount;
+class BoxPrizeBean {
+    var prizeName: String? = null
+    var amount: Int = 0
 }

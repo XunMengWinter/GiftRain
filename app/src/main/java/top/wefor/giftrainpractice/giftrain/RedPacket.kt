@@ -1,4 +1,4 @@
-package top.wefor.giftrainpractice.giftrain;
+package top.wefor.giftrainpractice.giftrain
 
 /**
  * Created on 2018/1/23.
@@ -7,100 +7,78 @@ package top.wefor.giftrainpractice.giftrain;
  *
  * @author ice
  */
+class RedPacket {
+    var index: Int = -1 //红包在红包流中的位置（未包含彩带）。
 
-public class RedPacket {
+    private var mX = 0
+    private var mY = 0 //飘落物此刻的坐标。
 
-    public static final int TYPE_PACKET = 1; //只有这个类型可以点击
-    public static final int TYPE_PACKET_OPEN = 3; //开启后
-    public static final int TYPE_BOOM = 5; //爆炸
-    public static final int TYPE_GIFT = 7; //礼物
+    var imageRes: Int = 0 //飘落物的图片资源。
 
-    public static final int TYPE_RIBBON = 12; //彩带
+    private var mType = TYPE_PACKET //飘落物体的类型。
 
+    private var mTypeIndex = 0 //飘落物当前类型的索引（每帧自增）。
 
-    private int mIndex = -1; //红包在红包流中的位置（未包含彩带）。
+    constructor()
 
-    private int mX, mY; //飘落物此刻的坐标。
-
-    private int mImageRes; //飘落物的图片资源。
-
-    private int mType = TYPE_PACKET; //飘落物体的类型。
-
-    private int mTypeIndex; //飘落物当前类型的索引（每帧自增）。
-
-    public RedPacket() {
-
+    constructor(x: Int, y: Int) {
+        mX = x
+        mY = y
     }
 
-    public RedPacket(int x, int y) {
-        mX = x;
-        mY = y;
+    fun nextX(dx: Int): Int {
+        mX = mX + dx
+        return mX
     }
 
-    public int getIndex() {
-        return mIndex;
+    fun nextY(dy: Int): Int {
+        mY = mY + dy
+        return mY
     }
 
-    public void setIndex(int index) {
-        mIndex = index;
+    fun setXY(x: Int, y: Int) {
+        mX = x
+        mY = y
     }
 
-    public int nextX(int dx) {
-        mX = mX + dx;
-        return mX;
+    fun isInArea(x: Int, y: Int): Boolean {
+        return false
     }
 
-    public int nextY(int dy) {
-        mY = mY + dy;
-        return mY;
-    }
+    val isClickable: Boolean
+        get() = mType == TYPE_PACKET
 
-    public void setXY(int x, int y) {
-        mX = x;
-        mY = y;
-    }
-
-    public boolean isInArea(int x, int y) {
-        return false;
-    }
-
-    public int getImageRes() {
-        return mImageRes;
-    }
-
-    public void setImageRes(int imageRes) {
-        mImageRes = imageRes;
-    }
-
-    public boolean isClickable() {
-        return mType == TYPE_PACKET;
-    }
-
-    public int getType() {
-        return mType;
-    }
-
-    public void setType(int type) {
-        if (mType != type) {
-            mTypeIndex = 0;
+    var type: Int
+        get() = mType
+        set(type) {
+            if (mType != type) {
+                mTypeIndex = 0
+            }
+            mType = type
         }
-        mType = type;
+
+    fun setTypeIndex(typeIndex: Int) {
+        mTypeIndex = typeIndex
     }
 
-    public void setTypeIndex(int typeIndex) {
-        mTypeIndex = typeIndex;
-    }
-
-    public int addTypeIndex(int addIndex) {
-        mTypeIndex += addIndex;
-        return mTypeIndex;
+    fun addTypeIndex(addIndex: Int): Int {
+        mTypeIndex += addIndex
+        return mTypeIndex
     }
 
     /*判断某个点是否在区域内*/
-    public boolean isInArea(int x, int y, int width, int height) {
-        boolean inX = x > mX && x < mX + width;
-        boolean inY = y > mY && y < mY + height;
-        return inX && inY;
+    fun isInArea(x: Int, y: Int, width: Int, height: Int): Boolean {
+        val inX = x > mX && x < mX + width
+        val inY = y > mY && y < mY + height
+        return inX && inY
     }
 
+    companion object {
+        const val TYPE_PACKET: Int = 1 //只有这个类型可以点击
+        const val TYPE_PACKET_OPEN: Int = 3 //开启后
+        const val TYPE_BOOM: Int = 5 //爆炸
+        const val TYPE_GIFT: Int = 7 //礼物
+
+        const val TYPE_RIBBON: Int = 12 //彩带
+    }
 }

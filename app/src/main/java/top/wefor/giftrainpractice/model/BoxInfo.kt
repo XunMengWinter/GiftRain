@@ -1,4 +1,4 @@
-package top.wefor.giftrainpractice.model;
+package top.wefor.giftrainpractice.model
 
 /**
  * Created on 2018/10/3.
@@ -6,27 +6,22 @@ package top.wefor.giftrainpractice.model;
  *
  * @author ice
  */
-public class BoxInfo {
+class BoxInfo {
     //红包ID（拿这个去问服务器是否中奖）
-    private int awardId;
+    var awardId: Int = 0
+        private set
+
     //红包校验
-    private String voucher;
+    var voucher: String? = null
+        private set
 
-    public int getAwardId() {
-        return awardId;
+    fun setAwardId(awardId: Int): BoxInfo {
+        this.awardId = awardId
+        return this
     }
 
-    public BoxInfo setAwardId(int awardId) {
-        this.awardId = awardId;
-        return this;
-    }
-
-    public String getVoucher() {
-        return voucher;
-    }
-
-    public BoxInfo setVoucher(String voucher) {
-        this.voucher = voucher;
-        return this;
+    fun setVoucher(voucher: String?): BoxInfo {
+        this.voucher = voucher
+        return this
     }
 }
